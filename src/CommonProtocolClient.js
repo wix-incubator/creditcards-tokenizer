@@ -18,6 +18,12 @@ export class CommonProtocolClient {
 				description: "request timed out"
 			})
 		}
+		xhr.onerror = function() {
+			deferred.reject({
+				code: "network_down",
+				description: "network is down"
+			})
+		}
 		xhr.onload = function() {
 			let response = JSON.parse(xhr.responseText)
 			if (response.error) {

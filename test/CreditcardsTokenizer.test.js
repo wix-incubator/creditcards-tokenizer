@@ -11,6 +11,7 @@ describe("CreditcardsTokenizer", function() {
 		port: tokenizerServicePort
 	})
 	let endpointUrl = "http://localhost:" + tokenizerServicePort + "/"
+	let invalidEndpointUrl = "http://thisisanonexistentdomain.thisdoesntexist/"
 	
 	let tokenizer = new CreditcardsTokenizer({XMLHttpRequest, endpointUrl})
 	
@@ -146,6 +147,21 @@ describe("CreditcardsTokenizer", function() {
 				expect(error.description).to.not.be.empty
 			})
 		})
+		
+		it ('gracefully fails when network is down', function() {
+			let tokenizerWithInvalidEndpointUrl = new CreditcardsTokenizer({
+				XMLHttpRequest: XMLHttpRequest,
+				endpointUrl: invalidEndpointUrl
+			})
+			
+			return tokenizerWithInvalidEndpointUrl.tokenize({card}).then(function(intransitToken) {
+				// Unexpected success
+				assert.ok(false, "Network should be down, but request returned " + JSON.stringify(intransitToken))
+			}, function(error) {
+				expect(error.code).to.equal("network_down")
+				expect(error.description).to.not.be.empty
+			})
+		})
 	})
 	
 	describe("intransit", function() {
@@ -210,6 +226,21 @@ describe("CreditcardsTokenizer", function() {
 				assert.ok(false, "Tokenizing a permanent token should have timed out, but returned " + JSON.stringify(intransitToken))
 			}, function(error) {
 				expect(error.code).to.equal("timeout")
+				expect(error.description).to.not.be.empty
+			})
+		})
+		
+		it ('gracefully fails when network is down', function() {
+			let tokenizerWithInvalidEndpointUrl = new CreditcardsTokenizer({
+				XMLHttpRequest: XMLHttpRequest,
+				endpointUrl: invalidEndpointUrl
+			})
+			
+			return tokenizerWithInvalidEndpointUrl.intransit({permanentToken, additionalFields}).then(function(intransitToken) {
+				// Unexpected success
+				assert.ok(false, "Network should be down, but request returned " + JSON.stringify(intransitToken))
+			}, function(error) {
+				expect(error.code).to.equal("network_down")
 				expect(error.description).to.not.be.empty
 			})
 		})
