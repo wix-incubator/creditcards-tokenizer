@@ -25,11 +25,18 @@ export class CommonProtocolClient {
 			})
 		}
 		xhr.onload = function() {
-			let response = JSON.parse(xhr.responseText)
-			if (response.error) {
-				deferred.reject(response.error)
-			} else {
-				deferred.resolve(response.value)
+			try {
+				let response = JSON.parse(xhr.response)
+				if (response.error) {
+					deferred.reject(response.error)
+				} else {
+					deferred.resolve(response.value)
+				}
+			} catch (e) {
+				deferred.reject({
+					code: "protocol",
+					description: "unexpected response format"
+				})
 			}
 		}
 		

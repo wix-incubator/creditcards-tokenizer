@@ -15,7 +15,7 @@ export class CreditcardsTokenizerDriver {
 	reset() {
 		this.driver.reset()
 	}
-	addRule({resource, request, response, delay}) {
-		this.driver.addRule({resource, request, response, delay})
+	addRule({resource, request, response, delay, useRawResponse}) {
+		this.driver.addRule({resource, request, response, delay, useRawResponse})
 	}
 }

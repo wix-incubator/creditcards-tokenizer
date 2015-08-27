@@ -162,6 +162,23 @@ describe("CreditcardsTokenizer", function() {
 				expect(error.description).to.not.be.empty
 			})
 		})
+		
+		it ('gracefully fails on protocol error', function() {
+			driver.addRule({
+				resource: "/tokenize",
+				request: {card},
+				response: "<html><head><title>Error 500</title></head></html>",
+				useRawResponse: true
+			})
+			
+			return tokenizer.tokenize({card}).then(function(intransitToken) {
+				// Unexpected success
+				assert.ok(false, "Expected protocol error, but request returned " + JSON.stringify(intransitToken))
+			}, function(error) {
+				expect(error.code).to.equal("protocol")
+				expect(error.description).to.not.be.empty
+			})
+		})
 	})
 	
 	describe("intransit", function() {
@@ -241,6 +258,23 @@ describe("CreditcardsTokenizer", function() {
 				assert.ok(false, "Network should be down, but request returned " + JSON.stringify(intransitToken))
 			}, function(error) {
 				expect(error.code).to.equal("network_down")
+				expect(error.description).to.not.be.empty
+			})
+		})
+		
+		it ('gracefully fails on protocol error', function() {
+			driver.addRule({
+				resource: "/intransit",
+				request: {permanentToken, additionalFields},
+				response: "<html><head><title>Error 500</title></head></html>",
+				useRawResponse: true
+			})
+			
+			return tokenizer.intransit({permanentToken, additionalFields}).then(function(intransitToken) {
+				// Unexpected success
+				assert.ok(false, "Expected protocol error, but request returned " + JSON.stringify(intransitToken))
+			}, function(error) {
+				expect(error.code).to.equal("protocol")
 				expect(error.description).to.not.be.empty
 			})
 		})
