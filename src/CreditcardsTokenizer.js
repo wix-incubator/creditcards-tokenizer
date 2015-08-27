@@ -1,37 +1,19 @@
 "use strict"
 
-import Q from "q"
+import {CommonProtocolClient} from "./CommonProtocolClient.js"
 
 export class CreditcardsTokenizer {
-	constructor({XMLHttpRequest, endpointUrl}) {
-		this.XMLHttpRequest = XMLHttpRequest || window.XMLHttpRequest
-		this.endpointUrl = endpointUrl || "https://pay.wix.com/cards/"
+	constructor({XMLHttpRequest, endpointUrl, timeout}) {
+		this.client = new CommonProtocolClient({
+			XMLHttpRequest: XMLHttpRequest,
+			endpointUrl: endpointUrl || "https://pay.wix.com/cards/",
+			timeout: timeout || 0
+		})
 	}
 	tokenize({card}) {
-		return this._doJsonRequest("tokenize", {card})
+		return this.client.doRequest("tokenize", {card})
 	}
 	intransit({permanentToken, additionalFields}) {
-		return this._doJsonRequest("intransit", {permanentToken, additionalFields})
-	}
-	_doJsonRequest(resource, request) {
-		let deferred = Q.defer()
-		
-		let xhr = new this.XMLHttpRequest()
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4) {
-				let response = JSON.parse(xhr.responseText)
-				if (response.error) {
-					deferred.reject(response.error)
-				} else {
-					deferred.resolve(response.value)
-				}
-			}
-		}
-		
-		xhr.open("POST", this.endpointUrl + resource, true)
-		xhr.setRequestHeader("Content-Type", "application/json")
-		xhr.send(JSON.stringify(request))
-
-		return deferred.promise
+		return this.client.doRequest("intransit", {permanentToken, additionalFields})
 	}
 }
