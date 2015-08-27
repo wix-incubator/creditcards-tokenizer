@@ -88,6 +88,11 @@ describe("CreditcardsTokenizer", function() {
 		}
 	}
 	
+	let someError = {
+		code: "someCode",
+		description: "someDescription"
+	}
+	
 	before(function() {
 		driver.start()
 	})
@@ -132,10 +137,7 @@ describe("CreditcardsTokenizer", function() {
 					card: invalidCard
 				},
 				response: {
-					error: {
-						code: "someCode",
-						description: "someDescription"
-					}
+					error: someError
 				}
 			})
 			
@@ -145,8 +147,7 @@ describe("CreditcardsTokenizer", function() {
 				// Unexpected success
 				assert.ok(false, "Tokenizing an invalid card returned " + JSON.stringify(intransitToken))
 			}, function(error) {
-				expect(error.code).to.not.be.empty
-				expect(error.description).to.not.be.empty
+				expect(error).to.deep.equal(someError)
 			})
 		})
 	})
@@ -189,10 +190,7 @@ describe("CreditcardsTokenizer", function() {
 					additionalFields: additionalFields
 				},
 				response: {
-					error: {
-						code: "someCode",
-						description: "someDescription"
-					}
+					error: someError
 				}
 			})
 			
@@ -203,8 +201,7 @@ describe("CreditcardsTokenizer", function() {
 				// Unexpected success
 				assert.ok(false, "Tokenizing an invalid permanent token returned " + JSON.stringify(intransitToken))
 			}, function(error) {
-				expect(error.code).to.not.be.empty
-				expect(error.description).to.not.be.empty
+				expect(error).to.deep.equal(someError)
 			})
 		})
 	})
