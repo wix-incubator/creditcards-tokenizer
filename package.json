@@ -4,7 +4,8 @@
   "description": "Wix Restaurants credit-cards tokenizer",
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel/register"
+    "test": "mocha --compilers js:babel/register",
+	"prepublish": "npm test"
   },
   "repository": {
     "type": "git",
