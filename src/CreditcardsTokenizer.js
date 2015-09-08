@@ -13,7 +13,7 @@ export class CreditcardsTokenizer {
 	tokenize({card}) {
 		return this.client.doRequest("tokenize", {card})
 	}
-	intransit({permanentToken, additionalFields}) {
-		return this.client.doRequest("intransit", {permanentToken, additionalFields})
+	intransit({permanentToken, additionalInfo}) {
+		return this.client.doRequest("intransit", {permanentToken, additionalInfo})
 	}
 }

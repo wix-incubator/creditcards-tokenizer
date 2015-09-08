@@ -1,7 +1,5 @@
 "use strict"
 
-import Q from "q"
-
 export class CommonProtocolClient {
 	constructor({XMLHttpRequest, endpointUrl, timeout}) {
 		this.XMLHttpRequest = XMLHttpRequest
@@ -9,35 +7,41 @@ export class CommonProtocolClient {
 		this.timeout = timeout || 0
 	}
 	doRequest(resource, request) {
-		let deferred = Q.defer()
-		
-		let xhr = new this.XMLHttpRequest()
-		xhr.ontimeout = function() {
-			deferred.reject({
-				code: "timeout",
-				description: "request timed out"
-			})
-		}
-		xhr.onerror = function() {
-			deferred.reject({
-				code: "network_down",
-				description: "network is down"
-			})
-		}
-		xhr.onload = function() {
-			let response = JSON.parse(xhr.responseText)
-			if (response.error) {
-				deferred.reject(response.error)
-			} else {
-				deferred.resolve(response.value)
+		let This = this
+		return new Promise(function(resolve, reject) {
+			let xhr = new This.XMLHttpRequest()
+			xhr.ontimeout = function() {
+				reject({
+					code: "timeout",
+					description: "request timed out"
+				})
 			}
-		}
-		
-		xhr.open("POST", this.endpointUrl + resource, true)
-		xhr.timeout = this.timeout
-		xhr.setRequestHeader("Content-Type", "application/json")
-		xhr.send(JSON.stringify(request))
-
-		return deferred.promise
+			xhr.onerror = function() {
+				reject({
+					code: "network_down",
+					description: "network is down"
+				})
+			}
+			xhr.onload = function() {
+				try {
+					let response = JSON.parse(xhr.response)
+					if (response.error) {
+						reject(response.error)
+					} else {
+						resolve(response.value)
+					}
+				} catch (e) {
+					reject({
+						code: "protocol",
+						description: "unexpected response format"
+					})
+				}
+			}
+			
+			xhr.open("POST", This.endpointUrl + resource, true)
+			xhr.timeout = This.timeout
+			xhr.setRequestHeader("Content-Type", "application/json")
+			xhr.send(JSON.stringify(request))
+		})
 	}
 }

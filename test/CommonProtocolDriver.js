@@ -18,14 +18,14 @@ export class CommonProtocolDriver {
 	reset() {
 		this.rules = {}
 	}
-	addRule({resource, request, response, delay}) {
+	addRule({resource, request, response, delay, useRawResponse}) {
 		delay = delay || 0
 		let resourceRules = this.rules[resource]
 		if (!resourceRules) {
 			resourceRules = []
 			this.rules[resource] = resourceRules
 		}
-		resourceRules.push({request, response, delay})
+		resourceRules.push({request, response, delay, useRawResponse})
 	}
 	_handler(req, res) {
 		let This = this
@@ -41,8 +41,8 @@ export class CommonProtocolDriver {
 			
 			if (rule) {
 				_.delay(function() {
-					res.writeHead(200, {'Content-Type': 'application/json'})
-					res.end(JSON.stringify(rule.response))
+					res.writeHead(200, {'Content-Type': rule.useRawResponse ? 'text/html' : 'application/json'})
+					res.end(rule.useRawResponse ? rule.response : JSON.stringify(rule.response))
 				}, rule.delay)
 			} else {
 				res.writeHead(404)

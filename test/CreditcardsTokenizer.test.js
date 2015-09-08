@@ -44,7 +44,7 @@ describe("CreditcardsTokenizer", function() {
 			network: "visa"
 		}
 	}
-	let additionalFields = {
+	let additionalInfo = {
 		csc: "123",
 		publicFields: {
 			holderId: "1234567890",
@@ -63,7 +63,7 @@ describe("CreditcardsTokenizer", function() {
 			},
 			network: "visa",
 			additionalFields: {
-				publicFields: additionalFields.publicFields
+				publicFields: additionalInfo.publicFields
 			}
 		}
 	}
@@ -162,26 +162,43 @@ describe("CreditcardsTokenizer", function() {
 				expect(error.description).to.not.be.empty
 			})
 		})
+		
+		it ('gracefully fails on protocol error', function() {
+			driver.addRule({
+				resource: "/tokenize",
+				request: {card},
+				response: "<html><head><title>Error 500</title></head></html>",
+				useRawResponse: true
+			})
+			
+			return tokenizer.tokenize({card}).then(function(intransitToken) {
+				// Unexpected success
+				assert.ok(false, "Expected protocol error, but request returned " + JSON.stringify(intransitToken))
+			}, function(error) {
+				expect(error.code).to.equal("protocol")
+				expect(error.description).to.not.be.empty
+			})
+		})
 	})
 	
 	describe("intransit", function() {
 		it ('creates in-transit tokens from valid permanent tokens', function() {
 			driver.addRule({
 				resource: "/intransit",
-				request: {permanentToken, additionalFields},
+				request: {permanentToken, additionalInfo},
 				response: {
 					value: intransitTokenWithAdditionalFields
 				}
 			})
 			
-			return tokenizer.intransit({permanentToken, additionalFields}).then(function(intransitToken) {
+			return tokenizer.intransit({permanentToken, additionalInfo}).then(function(intransitToken) {
 				expect(intransitToken.token).to.not.be.empty
 				expect(intransitToken.creditCard.lastDigits).to.be.equal(permanentToken.creditCard.lastDigits)
 				expect(intransitToken.creditCard.expiration).to.deep.equal(permanentToken.creditCard.expiration)
 				expect(intransitToken.creditCard.network).to.be.equal(permanentToken.creditCard.network)
 				expect(intransitToken.creditCard.additionalFields).to.exist
 				expect(intransitToken.creditCard.additionalFields.csc).to.not.exist
-				expect(intransitToken.creditCard.additionalFields.publicFields).to.deep.equal(additionalFields.publicFields)
+				expect(intransitToken.creditCard.additionalFields.publicFields).to.deep.equal(additionalInfo.publicFields)
 			}, function(error) {
 				assert.ok(false, "Tokenizing a valid card returned " + JSON.stringify(error))
 			})
@@ -191,13 +208,13 @@ describe("CreditcardsTokenizer", function() {
 		it ('gracefully fails on invalid permanent tokens', function() {
 			driver.addRule({
 				resource: "/intransit",
-				request: {permanentToken, additionalFields},
+				request: {permanentToken, additionalInfo},
 				response: {
 					error: someError
 				}
 			})
 			
-			return tokenizer.intransit({permanentToken, additionalFields}).then(function(intransitToken) {
+			return tokenizer.intransit({permanentToken, additionalInfo}).then(function(intransitToken) {
 				// Unexpected success
 				assert.ok(false, "Tokenizing an invalid permanent token returned " + JSON.stringify(intransitToken))
 			}, function(error) {
@@ -214,14 +231,14 @@ describe("CreditcardsTokenizer", function() {
 			
 			driver.addRule({
 				resource: "/intransit",
-				request: {permanentToken, additionalFields},
+				request: {permanentToken, additionalInfo},
 				response: {
 					value: intransitTokenWithAdditionalFields
 				},
 				delay: 100
 			})
 			
-			return tokenizerWithTimeout.intransit({permanentToken, additionalFields}).then(function(intransitToken) {
+			return tokenizerWithTimeout.intransit({permanentToken, additionalInfo}).then(function(intransitToken) {
 				// Unexpected success
 				assert.ok(false, "Tokenizing a permanent token should have timed out, but returned " + JSON.stringify(intransitToken))
 			}, function(error) {
@@ -236,11 +253,28 @@ describe("CreditcardsTokenizer", function() {
 				endpointUrl: invalidEndpointUrl
 			})
 			
-			return tokenizerWithInvalidEndpointUrl.intransit({permanentToken, additionalFields}).then(function(intransitToken) {
+			return tokenizerWithInvalidEndpointUrl.intransit({permanentToken, additionalInfo}).then(function(intransitToken) {
 				// Unexpected success
 				assert.ok(false, "Network should be down, but request returned " + JSON.stringify(intransitToken))
 			}, function(error) {
 				expect(error.code).to.equal("network_down")
+				expect(error.description).to.not.be.empty
+			})
+		})
+		
+		it ('gracefully fails on protocol error', function() {
+			driver.addRule({
+				resource: "/intransit",
+				request: {permanentToken, additionalInfo},
+				response: "<html><head><title>Error 500</title></head></html>",
+				useRawResponse: true
+			})
+			
+			return tokenizer.intransit({permanentToken, additionalInfo}).then(function(intransitToken) {
+				// Unexpected success
+				assert.ok(false, "Expected protocol error, but request returned " + JSON.stringify(intransitToken))
+			}, function(error) {
+				expect(error.code).to.equal("protocol")
 				expect(error.description).to.not.be.empty
 			})
 		})
