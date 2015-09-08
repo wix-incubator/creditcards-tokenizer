@@ -1,6 +1,6 @@
 {
   "name": "creditcards-tokenizer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Wix Restaurants credit-cards tokenizer",
   "main": "dist/index.js",
   "scripts": {
