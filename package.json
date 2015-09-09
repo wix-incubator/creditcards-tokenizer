@@ -5,10 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register",
-    "prepublish": [
-      "npm test",
-      "grunt"
-    ]
+    "prepublish": "npm test & grunt"
   },
   "repository": {
     "type": "git",
