@@ -1,6 +1,6 @@
-"use strict"
+'use strict'
 
-import {CommonProtocolDriver} from "./CommonProtocolDriver.js"
+import {CommonProtocolDriver} from './CommonProtocolDriver.js'
 
 export class CreditcardsTokenizerDriver {
 	constructor({port}) {

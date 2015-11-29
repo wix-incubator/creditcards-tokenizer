@@ -1,28 +1,27 @@
-"use strict"
+'use strict'
 
 export class CommonProtocolClient {
 	constructor({XMLHttpRequest, endpointUrl, timeout}) {
-		this.XMLHttpRequest = XMLHttpRequest
-		this.endpointUrl = endpointUrl
-		this.timeout = timeout || 0
+		this._XMLHttpRequest = XMLHttpRequest
+		this._endpointUrl = endpointUrl
+		this._timeout = timeout || 0
 	}
 	doRequest(resource, request) {
-		let This = this
-		return new Promise(function(resolve, reject) {
-			let xhr = new This.XMLHttpRequest()
-			xhr.ontimeout = function() {
+		return new Promise((resolve, reject) => {
+			let xhr = new this._XMLHttpRequest()
+			xhr.ontimeout = () => {
 				reject({
-					code: "timeout",
-					description: "request timed out"
+					code: 'timeout',
+					description: 'request timed out'
 				})
 			}
-			xhr.onerror = function() {
+			xhr.onerror = () => {
 				reject({
-					code: "network_down",
-					description: "network is down"
+					code: 'network_down',
+					description: 'network is down'
 				})
 			}
-			xhr.onload = function() {
+			xhr.onload = () => {
 				try {
 					let response = JSON.parse(xhr.response)
 					if (response.error) {
@@ -32,15 +31,15 @@ export class CommonProtocolClient {
 					}
 				} catch (e) {
 					reject({
-						code: "protocol",
-						description: "unexpected response format"
+						code: 'protocol',
+						description: 'unexpected response format'
 					})
 				}
 			}
 			
-			xhr.open("POST", This.endpointUrl + resource, true)
-			xhr.timeout = This.timeout
-			xhr.setRequestHeader("Content-Type", "application/json")
+			xhr.open('POST', `${this._endpointUrl}${resource}`, true)
+			xhr.timeout = this._timeout
+			xhr.setRequestHeader('Content-Type', 'application/json')
 			xhr.send(JSON.stringify(request))
 		})
 	}
