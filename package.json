@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha --compilers js:babel/register",
     "prepublish": "npm test && grunt",
-    "build": ":"
+    "build": ":",
+    "release": "wnpm-release -- --no-shrinkwrap"
   },
   "repository": {
     "type": "git",
@@ -38,7 +39,8 @@
     "jsx-loader": "^0.13.2",
     "lodash": "^3.9.3",
     "xhr2": "^0.1.3",
-    "q": "^1.4.1"
+    "q": "^1.4.1",
+    "@wix/wnpm-ci": "*"
   },
   "dependencies": {},
   "directories": {
