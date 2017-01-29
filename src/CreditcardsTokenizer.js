@@ -1,6 +1,6 @@
 'use strict'
 
-import {CommonProtocolClient} from './CommonProtocolClient.js'
+import {CommonProtocolClient} from './CommonProtocolClient'
 
 export class CreditcardsTokenizer {
 	constructor({XMLHttpRequest, endpointUrl, timeout}) {

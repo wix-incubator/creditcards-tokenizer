@@ -9,9 +9,9 @@ export class CommonProtocolClient {
 		this._timeout = timeout || 0
 	}
 	doRequest(resource, request) {
-		let deferred = Q.defer()
+		const deferred = Q.defer()
 		
-		let xhr = new this._XMLHttpRequest()
+		const xhr = new this._XMLHttpRequest()
 		xhr.ontimeout = () => {
 			deferred.reject({
 				code: 'timeout',
@@ -26,7 +26,7 @@ export class CommonProtocolClient {
 		}
 		xhr.onload = () => {
 			try {
-				let response = JSON.parse(xhr.response)
+				const response = JSON.parse(xhr.response)
 				if (response.error) {
 					deferred.reject(response.error)
 				} else {
