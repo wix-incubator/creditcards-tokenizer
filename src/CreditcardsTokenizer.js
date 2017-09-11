@@ -11,19 +11,11 @@ export class CreditcardsTokenizer {
 		})
 	}
 
-	// Deprecated. Use tokenizeNG instead
-    tokenize({card}) {
-		return this.client.doRequest('tokenize', {card})
-	}
-    tokenizeNG({card}, tenantId) {
-        return this.client.doRequest('tokenizeNG', {card, tenantId})
+    tokenize({card}, tenantId) {
+        return this.client.doRequest('tokenize', {card, tenantId})
     }
 
-    // Deprecated. Use intransitNG instead
-	intransit({permanentToken, additionalInfo}) {
-		return this.client.doRequest('intransit', {permanentToken, additionalInfo})
-	}
-    intransitNG({permanentToken, additionalInfo}, tenantId) {
-        return this.client.doRequest('intransitNG', {permanentToken, additionalInfo, tenantId})
+    intransit({permanentToken, additionalInfo}, tenantId) {
+        return this.client.doRequest('intransit', {permanentToken, additionalInfo, tenantId})
     }
 }
