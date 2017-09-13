@@ -11,7 +11,7 @@ export class CreditcardsTokenizer {
 		})
 	}
 
-    tokenize({card}, tenantId) {
+    tokenize({tenantId, card}) {
         return this.client.doRequest('tokenize', {card, tenantId})
     }
 
