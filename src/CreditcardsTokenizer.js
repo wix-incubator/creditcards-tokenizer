@@ -1,5 +1,3 @@
-'use strict'
-
 import {CommonProtocolClient} from './CommonProtocolClient'
 
 export class CreditcardsTokenizer {

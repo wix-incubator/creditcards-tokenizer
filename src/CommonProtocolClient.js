@@ -1,5 +1,3 @@
-'use strict'
-
 import Q from 'q'
 
 export class CommonProtocolClient {

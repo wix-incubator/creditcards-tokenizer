@@ -1,5 +1,3 @@
-'use strict'
-
 import {CommonProtocolDriver} from './CommonProtocolDriver.js'
 
 export class CreditcardsTokenizerDriver {

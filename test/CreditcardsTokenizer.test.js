@@ -1,5 +1,3 @@
-'use strict';
-
 import {CreditcardsTokenizer} from '../src/CreditcardsTokenizer.js';
 import {CreditcardsTokenizerDriver} from './CreditcardsTokenizerDriver.js';
 import {expect, assert} from 'chai';
