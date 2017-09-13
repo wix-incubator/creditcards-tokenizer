@@ -216,21 +216,28 @@ describe('CreditcardsTokenizer', () => {
     	it ('creates in-transit tokens from valid permanent tokens', () => {
     		driver.addRule({
         		resource: '/intransit',
-        		request: {permanentToken, additionalInfo, tenantId: someTenantId},
+        		request: {
+                    tenantId: someTenantId,
+                    permanentToken,
+                    additionalInfo
+                },
         		response: {
             		value: intransitTokenWithAdditionalFields
         		}
     		});
 
-    		return tokenizer.intransit({permanentToken, additionalInfo}, someTenantId).then((intransitToken) => {
+    		return tokenizer.intransit({
+                tenantId: someTenantId,
+                permanentToken,
+                additionalInfo
+            }).then((intransitToken) => {
         		expect(intransitToken.token).to.not.be.empty;
     			expect(intransitToken.creditCard.lastDigits).to.be.equal(permanentToken.creditCard.lastDigits);
     			expect(intransitToken.creditCard.expiration).to.deep.equal(permanentToken.creditCard.expiration);
     			expect(intransitToken.creditCard.network).to.be.equal(permanentToken.creditCard.network);
     			expect(intransitToken.creditCard.additionalFields).to.exist;
     			expect(intransitToken.creditCard.additionalFields.csc).to.not.exist;
-    			expect(intransitToken.creditCard.additionalFields.publicFields).to.deep.equal(
-    				additionalInfo.publicFields);
+    			expect(intransitToken.creditCard.additionalFields.publicFields).to.deep.equal(additionalInfo.publicFields);
 			}, (error) => {
         		assert.ok(false, `Tokenizing a valid card returned ${JSON.stringify(error)}`);
     		});
@@ -239,13 +246,21 @@ describe('CreditcardsTokenizer', () => {
 		it ('gracefully fails on invalid permanent tokens', () => {
     		driver.addRule({
     			resource: '/intransit',
-    			request: {permanentToken, additionalInfo, tenantId: someTenantId},
+    			request: {
+                    tenantId: someTenantId,
+                    permanentToken,
+                    additionalInfo
+                },
     			response: {
         			error: someError
     			}
 			});
 
-			return tokenizer.intransit({permanentToken, additionalInfo}, someTenantId).then((intransitToken) => {
+			return tokenizer.intransit({
+                tenantId: someTenantId,
+                permanentToken,
+                additionalInfo
+            }).then((intransitToken) => {
     			// successse???
     			assert.ok(false, `Tokenizing an invalid permanent token returned ${JSON.stringify(intransitToken)}`);
 			}, (error) => {
@@ -262,24 +277,28 @@ describe('CreditcardsTokenizer', () => {
 
     		driver.addRule({
     			resource: '/intransit',
-    			request: {permanentToken, additionalInfo, tenantId: someTenantId},
+    			request: {
+                    tenantId: someTenantId,
+                    permanentToken,
+                    additionalInfo
+                },
     			response: {
         			value: intransitTokenWithAdditionalFields
     			},
     			delay: 100
 			});
 
-			return tokenizerWithTimeout.intransit({permanentToken, additionalInfo}, someTenantId).then(
-				(intransitToken) => {
-    				// success???
-    				assert.ok(
-    					false,
-						`Tokenizing a permanent token should have timed out, but returned ${JSON.stringify(intransitToken)}`);
-				}, (error) => {
-    				expect(error.code).to.equal('timeout');
-    				expect(error.description).to.not.be.empty;
-				}
-			);
+			return tokenizerWithTimeout.intransit({
+                tenantId: someTenantId,
+                permanentToken,
+                additionalInfo
+            }).then((intransitToken) => {
+                // success???
+                assert.ok(false, `Tokenizing a permanent token should have timed out, but returned ${JSON.stringify(intransitToken)}`);
+            }, (error) => {
+                expect(error.code).to.equal('timeout');
+                expect(error.description).to.not.be.empty;
+            });
 		});
 
 		it ('gracefully fails when network is down', () => {
@@ -288,26 +307,36 @@ describe('CreditcardsTokenizer', () => {
         		endpointUrl: invalidEndpointUrl
     		});
 
-    		return tokenizerWithInvalidEndpointUrl.intransit({permanentToken, additionalInfo}, someTenantId).then(
-    			(intransitToken) => {
-        			// success???
-        			assert.ok(false, `Network should be down, but request returned ${JSON.stringify(intransitToken)}`);
-				}, (error) => {
-    				expect(error.code).to.equal('network_down');
-    				expect(error.description).to.not.be.empty;
-				}
-			);
+    		return tokenizerWithInvalidEndpointUrl.intransit({
+                tenantId: someTenantId,
+                permanentToken,
+                additionalInfo
+            }).then((intransitToken) => {
+                // success???
+                assert.ok(false, `Network should be down, but request returned ${JSON.stringify(intransitToken)}`);
+            }, (error) => {
+                expect(error.code).to.equal('network_down');
+                expect(error.description).to.not.be.empty;
+            });
 		});
 
 		it ('gracefully fails on protocol error', () => {
     		driver.addRule({
     			resource: '/intransit',
-    			request: {permanentToken, additionalInfo, tenantId: someTenantId},
+    			request: {
+                    tenantId: someTenantId,
+                    permanentToken,
+                    additionalInfo
+                },
     			response: '<html><head><title>Error 500</title></head></html>',
     			useRawResponse: true
 			});
 
-			return tokenizer.intransit({permanentToken, additionalInfo}, someTenantId).then((intransitToken) => {
+			return tokenizer.intransit({
+                tenantId: someTenantId,
+                permanentToken,
+                additionalInfo
+            }).then((intransitToken) => {
     			// success???
     			assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(intransitToken)}`);
 			}, (error) => {

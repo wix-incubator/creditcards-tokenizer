@@ -15,7 +15,7 @@ export class CreditcardsTokenizer {
         return this.client.doRequest('tokenize', {card, tenantId})
     }
 
-    intransit({permanentToken, additionalInfo}, tenantId) {
+    intransit({tenantId, permanentToken, additionalInfo}) {
         return this.client.doRequest('intransit', {permanentToken, additionalInfo, tenantId})
     }
 }
